@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test and coverage
+htmlcov/
+.tox/
+.coverage
+.cache
+.pytest_cache/
+
+# Logs
+*.log
+
+# Env files
+.env
+.env.*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# FastAPI/Starlette
+instance/
+
+# Misc
+*.swp
