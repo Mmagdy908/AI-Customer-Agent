@@ -10,11 +10,10 @@ load_dotenv()
 
 class AgentService:
     def __init__(self, db: Session):
-        self.db = db
+        self.thread_repository = ThreadRepository(db)
 
     def get_all_threads(self):
-        thread_repository = ThreadRepository(self.db)
-        return thread_repository.get_all_threads(None)
+        return self.thread_repository.get_all_threads(None)
 
     # TODO
     # need refactoring
@@ -32,15 +31,13 @@ class AgentService:
             "accept": "application/json",
         }
 
-        thread_repository = ThreadRepository(self.db)
-
         chat_messages = []
         user_message = {"role": "user", "content": prompt}
         thread_title = None
 
         # load thread title and messages if it exists
         if thread_id:
-            thread = thread_repository.get_thread_by_id(thread_id)
+            thread = self.thread_repository.get_thread_by_id(thread_id)
             if not thread:
                 raise HTTPException(404, "This thread is not found")
             chat_messages = thread.messages
@@ -80,11 +77,13 @@ class AgentService:
 
             thread_id = responseData["thread_id"]
             thread_title = res["choices"][0]["message"]["content"]
-            thread_repository.create_thread(thread_id, thread_title)
+            self.thread_repository.create_thread(thread_id, thread_title)
 
         # save new user message & response to the thread in DB
         assistant_message = responseData["choices"][0]["message"]
-        thread_repository.add_messages(thread_id, [user_message, assistant_message])
+        self.thread_repository.add_messages(
+            thread_id, [user_message, assistant_message]
+        )
 
         return {
             "thread_id": thread_id,
