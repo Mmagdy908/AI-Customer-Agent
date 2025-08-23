@@ -12,6 +12,10 @@ class AgentService:
     def __init__(self, db: Session):
         self.db = db
 
+    def get_all_threads(self):
+        thread_repository = ThreadRepository(self.db)
+        return thread_repository.get_all_threads(None)
+
     # TODO
     # need refactoring
     def send_agent_prompt(self, prompt: str, thread_id: str | None = None) -> any:

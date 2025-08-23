@@ -15,6 +15,11 @@ class ThreadRepository:
         self.db.refresh(new_thread)
         return copy.deepcopy(new_thread)
 
+    # TODO
+    # get all threads of a user
+    def get_all_threads(self, user_id):
+        return self.db.query(Thread).filter(Thread.user_id == user_id).all()
+
     def get_thread_by_id(self, thread_id: str) -> Thread | None:
         return copy.deepcopy(self.db.query(Thread).get(thread_id))
 
