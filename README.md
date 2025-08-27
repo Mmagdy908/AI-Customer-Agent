@@ -23,7 +23,7 @@ It uses a **multi-agent architecture** to classify and respond to customer reque
 
 Here’s the architecture of **Agentify** showing how the Classifier Agent orchestrates requests and delegates them to other agents:
 
-![Agentify Architecture](./assets/agentify-diagram.png)
+<img width="828" height="418" alt="agentify-diagram" src="https://github.com/user-attachments/assets/5d6b9b00-08d7-475c-bd1b-354d23c07676" />
 
 ---
 
