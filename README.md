@@ -21,9 +21,9 @@ It uses a **multi-agent architecture** to classify and respond to customer reque
 
 ## 🏗️ Architecture
 
-```
-[Client] <-> [FastAPI Backend + JWT + PostgreSQL] <-> [Watsonx Orchestrate Agents] <-> [Jira/Gmail APIs]
-```
+Here’s the architecture of **Agentify** showing how the Classifier Agent orchestrates requests and delegates them to other agents:
+
+![Agentify Architecture](./assets/agentify-diagram.png)
 
 ---
 
