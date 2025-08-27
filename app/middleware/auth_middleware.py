@@ -23,21 +23,25 @@ def get_current_user(
     """
     Dependency to get the current user from the token.
     """
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("user_id")
 
-    user_id = payload.get("user_id")
+        if user_id is None:
+            raise HTTPException(
+                status_code=401, detail="Invalid authentication credentials"
+            )
 
-    if user_id is None:
-        raise HTTPException(
-            status_code=401, detail="Invalid authentication credentials"
-        )
+        user_service = UserService(db)
+        user = user_service.get_user_by_id(user_id)
 
-    user_service = UserService(db)
-    user = user_service.get_user_by_id(user_id)
-
-    if user is None:
-        raise HTTPException(
-            status_code=401, detail="Invalid authentication credentials"
-        )
-    return user
+        if user is None:
+            raise HTTPException(
+                status_code=401, detail="Invalid authentication credentials"
+            )
+        return user
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(498, "Expired token")
+    except jwt.DecodeError:
+        raise HTTPException(400, "Error Decoding Token")

@@ -7,8 +7,8 @@ class ThreadRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_thread(self, thread_id: str, thread_title: str):
-        new_thread = Thread(thread_id=thread_id, title=thread_title)
+    def create_thread(self, thread_id: str, thread_title: str, user_id):
+        new_thread = Thread(thread_id=thread_id, title=thread_title, user_id=user_id)
         self.db.add(new_thread)
         self.db.commit()
         self.db.refresh(new_thread)
