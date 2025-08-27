@@ -7,10 +7,48 @@ from app.repositories.thread_repository import ThreadRepository
 
 load_dotenv()
 
+ORCHESTRATE_URL = f"{os.getenv('ORCHESTRATE_URL')}/v1/orchestrate/{os.getenv('ORCHESTRATE_AGENT_ID')}/chat/completions"
+
 
 class AgentService:
     def __init__(self, db: Session):
         self.thread_repository = ThreadRepository(db)
+
+    def _send_agent_message(
+        self, chat_messages: list[dict[str, str]], thread_id: str | None = None
+    ):
+        # define headers
+        headers = {
+            # "Authorization": f"Bearer {os.getenv("ORCHESTRATE_APIKEY")}",
+            "IAM-API_KEY": os.getenv("ORCHESTRATE_APIKEY"),
+            "X-IBM-THREAD-ID": thread_id,
+            "content-type": "application/json",
+            "accept": "application/json",
+        }
+
+        response = requests.post(
+            ORCHESTRATE_URL,
+            json={
+                "model": os.getenv("ORCHESTRATE_MODEL_ID"),
+                "messages": chat_messages,
+                "stream": False,
+            },
+            headers=headers,
+        )
+
+        return response.json()
+
+    def _generate_thread_title(self, prompt: str) -> str:
+        title_messages = [
+            {
+                "role": "user",
+                "content": f"generate a suitable thread title depending on the user input. Respond with just the title. this is user prompt:{prompt}",
+            },
+        ]
+
+        return self._send_agent_message(title_messages)["choices"][0]["message"][
+            "content"
+        ]
 
     def get_all_threads(self):
         return self.thread_repository.get_all_threads(None)
@@ -22,14 +60,6 @@ class AgentService:
         Process the agent prompt and return a response.
         This is a placeholder function that simulates sending a prompt to an agent.
         """
-        # define headers
-        headers = {
-            # "Authorization": f"Bearer {os.getenv("ORCHESTRATE_APIKEY")}",
-            "IAM-API_KEY": os.getenv("ORCHESTRATE_APIKEY"),
-            "X-IBM-THREAD-ID": thread_id,
-            "content-type": "application/json",
-            "accept": "application/json",
-        }
 
         chat_messages = []
         user_message = {"role": "user", "content": prompt}
@@ -46,37 +76,13 @@ class AgentService:
         # sending new prompt to agent
         chat_messages.append(user_message)
 
-        response = requests.post(
-            f"{os.getenv('ORCHESTRATE_URL')}/v1/orchestrate/{os.getenv('ORCHESTRATE_AGENT_ID')}/chat/completions",
-            json={
-                "model": os.getenv("ORCHESTRATE_MODEL_ID"),
-                "messages": chat_messages,
-                "stream": False,
-            },
-            headers=headers,
-        )
-
-        responseData = response.json()
+        responseData = self._send_agent_message(chat_messages, thread_id)
 
         # generate thread title if new thread is created
         if not thread_id:
-            res = requests.post(
-                f"{os.getenv('ORCHESTRATE_URL')}/v1/orchestrate/{os.getenv('ORCHESTRATE_AGENT_ID')}/chat/completions",
-                json={
-                    "model": os.getenv("ORCHESTRATE_MODEL_ID"),
-                    "messages": [
-                        {
-                            "role": "user",
-                            "content": f"generate a suitable thread title depending on the user input. Respond with just the title. this is user prompt:{prompt}",
-                        },
-                    ],
-                    "stream": False,
-                },
-                headers=headers,
-            ).json()
 
             thread_id = responseData["thread_id"]
-            thread_title = res["choices"][0]["message"]["content"]
+            thread_title = self._generate_thread_title(prompt)
             self.thread_repository.create_thread(thread_id, thread_title)
 
         # save new user message & response to the thread in DB
