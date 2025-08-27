@@ -12,4 +12,4 @@ class Thread(Base):
         String,
     )
     user_id = Column(Integer, index=True)
-    messages = Column(JSONB, default=list)
+    # messages = Column(JSONB, default=list)

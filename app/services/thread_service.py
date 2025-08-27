@@ -4,6 +4,7 @@ import os
 import requests
 from sqlalchemy.orm import Session
 from app.repositories.thread_repository import ThreadRepository
+from app.repositories.message_repository import MessageRepository
 
 load_dotenv()
 
@@ -13,6 +14,7 @@ ORCHESTRATE_URL = f"{os.getenv('ORCHESTRATE_URL')}/v1/orchestrate/{os.getenv('OR
 class AgentService:
     def __init__(self, db: Session):
         self.thread_repository = ThreadRepository(db)
+        self.mesaage_repository = MessageRepository(db)
 
     def _send_agent_message(
         self, chat_messages: list[dict[str, str]], thread_id: str | None = None
@@ -70,7 +72,8 @@ class AgentService:
             thread = self.thread_repository.get_thread_by_id(thread_id)
             if not thread:
                 raise HTTPException(404, "This thread is not found")
-            chat_messages = thread.messages
+            chat_messages = self.mesaage_repository.get_all_messages(thread_id)
+            print("stored chat messages: ", chat_messages)
             thread_title = thread.title
 
         # sending new prompt to agent
@@ -87,9 +90,17 @@ class AgentService:
 
         # save new user message & response to the thread in DB
         assistant_message = responseData["choices"][0]["message"]
-        self.thread_repository.add_messages(
-            thread_id, [user_message, assistant_message]
+        self.mesaage_repository.create_message(
+            thread_id, role=user_message["role"], content=user_message["content"]
         )
+        self.mesaage_repository.create_message(
+            thread_id,
+            role=assistant_message["role"],
+            content=assistant_message["content"],
+        )
+        # self.thread_repository.add_messages(
+        #     thread_id, [user_message, assistant_message]
+        # )
 
         return {
             "thread_id": thread_id,

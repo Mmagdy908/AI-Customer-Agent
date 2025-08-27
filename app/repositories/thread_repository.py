@@ -1,6 +1,5 @@
-from sqlalchemy import select
 from app.models.thread import Thread
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session
 import copy
 
 
@@ -22,10 +21,3 @@ class ThreadRepository:
 
     def get_thread_by_id(self, thread_id: str) -> Thread | None:
         return copy.deepcopy(self.db.query(Thread).get(thread_id))
-
-    def add_messages(self, thread_id: str, messages: list[dict[str, str]]):
-        thread = self.db.query(Thread).filter(Thread.thread_id == thread_id).first()
-        thread.messages = thread.messages + messages
-        self.db.commit()
-        self.db.refresh(thread)
-        return copy.deepcopy(thread)
