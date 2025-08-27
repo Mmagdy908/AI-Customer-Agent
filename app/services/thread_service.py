@@ -55,8 +55,6 @@ class AgentService:
     def get_all_threads(self):
         return self.thread_repository.get_all_threads(None)
 
-    # TODO
-    # need refactoring
     def send_agent_prompt(self, prompt: str, thread_id: str | None = None) -> any:
         """
         Process the agent prompt and return a response.
@@ -73,7 +71,6 @@ class AgentService:
             if not thread:
                 raise HTTPException(404, "This thread is not found")
             chat_messages = self.mesaage_repository.get_all_messages(thread_id)
-            print("stored chat messages: ", chat_messages)
             thread_title = thread.title
 
         # sending new prompt to agent
@@ -98,9 +95,6 @@ class AgentService:
             role=assistant_message["role"],
             content=assistant_message["content"],
         )
-        # self.thread_repository.add_messages(
-        #     thread_id, [user_message, assistant_message]
-        # )
 
         return {
             "thread_id": thread_id,
