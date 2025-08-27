@@ -1,4 +1,3 @@
-import psycopg2
 from urllib.parse import urlparse
 from dotenv import load_dotenv
 import os
