@@ -1,19 +1,174 @@
-# AI Customer Support FastAPI Project
+# 🤖 Agentify – Multi-Agent Customer Support System
 
-## Project Structure
+**Agentify** is an AI-powered customer support system built with **FastAPI, PostgreSQL, and IBM Watsonx Orchestrate**.
+It uses a **multi-agent architecture** to classify and respond to customer requests, create support tickets, and escalate issues when needed.
 
-- `main.py`: FastAPI app entry point
-- `app/controllers/`: Route controllers
-- `app/services/`: Business logic
-- `app/repositories/`: Data access layer
-- `app/config/`: Configuration files
-- `app/constants/`: Application constants
-- `app/utils/`: Utility functions
+---
 
-## Running the Server
+## 🚀 Features
 
-```sh
-D:/python/fastapi/AI Customer Support/.venv/Scripts/python.exe -m uvicorn main:app --reload
+* 🔑 **JWT Authentication** – User registration & login
+* 🧠 **Multi-Agent System** powered by **Watsonx Orchestrate**
+
+  * **Classifier Agent** → routes requests to the correct agent
+  * **Info Agent** → answers inquiries using business knowledge base
+  * **Ticket Agent** → creates Jira issues for technical requests
+  * **Escalation Agent** → sends escalation emails via Gmail API
+* 💬 **Threaded Conversations** – each interaction is stored and retrievable
+* 📩 **3rd-party integrations** – Jira, Gmail (Google Cloud API)
+
+---
+
+## 🏗️ Architecture
+
+```
+[Client] <-> [FastAPI Backend + JWT + PostgreSQL] <-> [Watsonx Orchestrate Agents] <-> [Jira/Gmail APIs]
 ```
 
-Visit [http://127.0.0.1:8000/hello](http://127.0.0.1:8000/hello) to test the hello endpoint.
+---
+
+## 🌐 Live Demo
+
+Frontend (Client): \[PLACEHOLDER\_URL]
+
+Backend (API): \[https://ai-customer-agent-production.up.railway.app/api/v1]
+
+---
+
+## 📦 Tech Stack
+
+* **Backend:** FastAPI, PostgreSQL, SQLAlchemy
+* **AI/Agents:** IBM Watsonx Orchestrate
+* **Integrations:** Jira API, Gmail API (Google Cloud)
+
+---
+
+## 🔑 Authentication
+
+### Register
+
+`POST /auth/register`
+
+**Request**
+
+```json
+{
+  "full_name": "Mohamed tarek",
+  "email": "test@test.com",
+  "password": "test1234"
+}
+```
+
+**Response**
+
+```json
+{
+  "id": 2,
+  "full_name": "Mohamed tarek",
+  "email": "test@test.com"
+}
+```
+
+---
+
+### Login
+
+`POST /auth/login`
+
+**Request**
+
+```json
+{
+  "email": "test@test.com",
+  "password": "test1234"
+}
+```
+
+**Response**
+
+```json
+{
+  "id": 2,
+  "full_name": "Mohamed tarek",
+  "email": "test@test.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI..."
+}
+```
+
+---
+
+## 💬 Conversations
+
+### Get All Threads
+
+`GET /threads` (requires Bearer Token)
+
+**Response**
+
+```json
+{
+  "response": [
+    {
+      "thread_id": "c6129b43-1076-49ee-a821-9f068c2dcf5c",
+      "title": "\"Refund Payment Request\"",
+      "user_id": 2
+    },
+    {
+      "thread_id": "39488b80-b6f6-4c58-b68f-3836faa0684c",
+      "title": "\"Refund Payment Request\"",
+      "user_id": 2
+    }
+  ]
+}
+```
+
+---
+
+### Get Messages in Thread
+
+`GET /messages/:thread_id` (requires Bearer Token)
+
+**Response**
+
+```json
+{
+  "response": [
+    { "role": "user", "content": "i want to refund my payment" },
+    { "role": "assistant", "content": "What is your order number?" },
+    { "role": "user", "content": "124124" },
+    { "role": "assistant", "content": "Your refund for order 124124 has been successfully submitted. Your issue number is KAN-5." }
+  ]
+}
+```
+
+---
+
+### Send Prompt (Start or Continue Thread)
+
+`POST /threads/send_prompt` (requires Bearer Token)
+
+**Request**
+
+```json
+{
+  "content": "i want to refund my payment",
+  "thread_id": "c6129b43-1076-49ee-a821-9f068c2dcf5c"  //optional
+}
+```
+
+**Response**
+
+```json
+{
+  "response": {
+    "thread_id": "e48ab4c0-e89b-4137-9bb9-07792bb2db8a",
+    "thread_title": "\"Refund Payment Request\"",
+    "response": {
+      "role": "assistant",
+      "content": "What is your order number?"
+    }
+  }
+}
+```
+
+---
