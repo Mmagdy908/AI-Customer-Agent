@@ -52,8 +52,8 @@ class AgentService:
             "content"
         ]
 
-    def get_all_threads(self):
-        return self.thread_repository.get_all_threads(None)
+    def get_all_threads(self, user_id: int):
+        return self.thread_repository.get_all_threads(user_id)
 
     def send_agent_prompt(self, prompt: str, thread_id: str | None = None) -> any:
         """

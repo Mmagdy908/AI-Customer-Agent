@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 from app.config.dbconfig import Base
 
@@ -11,5 +11,7 @@ class Thread(Base):
     title = Column(
         String,
     )
-    user_id = Column(Integer, index=True)
-    # messages = Column(JSONB, default=list)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+
+    # Relationship
+    user = relationship("User")
