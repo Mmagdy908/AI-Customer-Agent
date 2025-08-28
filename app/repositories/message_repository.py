@@ -29,7 +29,7 @@ class MessageRepository:
                     "id": m.id,
                     "role": m.role,
                     "content": m.content,
-                    "created_at": m.created_at,
+                    "created_at": m.created_at.isoformat(),
                 },
                 messages,
             )
