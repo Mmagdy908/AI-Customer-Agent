@@ -29,7 +29,7 @@ Here’s the architecture of **Agentify** showing how the Classifier Agent orche
 
 ## 🌐 Live Demo
 
-Frontend (Client): \[PLACEHOLDER\_URL]
+Frontend (Client): \[https://agentify-ai-customer-support-client.vercel.app/]
 
 Backend (API): \[https://ai-customer-agent-production.up.railway.app/api/v1]
 
