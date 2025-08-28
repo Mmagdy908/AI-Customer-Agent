@@ -23,4 +23,4 @@ class MessageRepository:
             .all()
         )
 
-        return list(map(lambda m: {"role": m.role, "content": m.content}, messages))
+        return list(map(lambda m: {"id":m.id,"role": m.role, "content": m.content,"created_at": m.created_at}, messages))
