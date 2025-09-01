@@ -35,6 +35,14 @@ Backend (API): https://ai-customer-agent-production.up.railway.app/api/v1
 
 ---
 
+## 🎥 Demo video
+
+
+
+https://github.com/user-attachments/assets/0f25ec4d-ce2a-4351-9fd4-d975cce241a5
+
+
+---
 ## 📦 Tech Stack
 
 * **Backend:** FastAPI, PostgreSQL, SQLAlchemy
